@@ -7,7 +7,7 @@ namespace Web.Models
     {
         public Guid Id { get; set; }
 
-        public Guid? FolderId { get; set; }
+        public Guid FolderId { get; set; }
 
         public Folder Folder { get; set; }
         

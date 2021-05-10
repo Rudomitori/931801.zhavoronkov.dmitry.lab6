@@ -14,6 +14,8 @@ namespace Web.Models
 
         public ICollection<File> Files { get; set; }
         
+        public ICollection<Folder> Folders { get; set; }
+        
         public Guid OwnerId { get; set; }
         
         public User Owner { get; set; }

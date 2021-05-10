@@ -75,17 +75,26 @@ namespace Web.Data
                 }
             };
 
+            var rootFolder = new Folder
+            {
+                Id = Guid.NewGuid(),
+                Name = "Root",
+                OwnerId = admin.Id,
+            };
+            
             var folders = new Folder[]
             {
                 new()
                 {
                     Id = Guid.NewGuid(),
+                    ParentFolderId = rootFolder.Id,
                     Name = "Some folder",
                     OwnerId = admin.Id,
                 },
                 new()
                 {
                     Id = Guid.NewGuid(),
+                    ParentFolderId = rootFolder.Id,
                     Name = "Some folder too",
                     OwnerId = admin.Id,
                 }
@@ -96,6 +105,7 @@ namespace Web.Data
                 new ()
                 {
                     Id = Guid.NewGuid(),
+                    FolderId = rootFolder.Id,
                     Name = "Some file",
                     Body = new byte[]{123,123,12,3,123,123,123,123},
                     Size = 8,
@@ -104,6 +114,7 @@ namespace Web.Data
                 new ()
                 {
                     Id = Guid.NewGuid(),
+                    FolderId = rootFolder.Id,
                     Name = "Some file too",
                     Body = new byte[]{1, 2, 3, 4, 5, 6, 7, 8},
                     Size = 8,
@@ -115,6 +126,7 @@ namespace Web.Data
             builder.Entity<ForumCategory>().HasData(offtopCategory);
             builder.Entity<Post>().HasData(firstOfftop);
             builder.Entity<Attachment>().HasData(attachments);
+            builder.Entity<Folder>().HasData(rootFolder);
             builder.Entity<File>().HasData(files);
             builder.Entity<Folder>().HasData(folders);
         }

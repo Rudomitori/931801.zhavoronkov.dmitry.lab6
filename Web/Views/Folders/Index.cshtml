@@ -1,8 +1,23 @@
 ﻿@model Web.ViewModels.FolderViewModel
 @{
-    ViewBag.Title = Model.Name;
+    ViewBag.Title = Model.Folder.Name;
 }
-<h1>Root</h1>
+<h1>@Model.Folder.Name</h1>
+
+<div class="input-group input-group-sm mb-1">
+    <div class="input-group-prepend">
+        @foreach (var (name, id) in Model.Path)
+        {
+            <span class="input-group-text">
+                <a asp-controller="Folders" asp-action="GetFolder" asp-route-id="@id">@name</a>
+            </span>
+        }
+    </div>
+    <div class="form-control"></div>
+    <div class="input-group-append">
+        <a class="btn btn-outline-danger" asp-controller="Home" asp-action="Index"><i class="bi bi-trash"></i></a>
+    </div>
+</div>
 
 <table class="table table-bordered table-hover table-sm">
     <thead class="thead-dark">
@@ -13,21 +28,37 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var folder in Model.Folders)
+    @if (Model.Folder.ParentFolder != null)
     {
         <tr>
-            <th scope="row"><i class="bi bi-folder2"></i> @folder.Name</th>
+            <th scope="row">
+                <a asp-controller="Folders" asp-action="GetFolder" asp-route-id="@Model.Folder.ParentFolder.Id">
+                    <i class="bi bi-folder2"></i> ..
+                </a>
+            </th>
+            <td>@Model.Folder.ParentFolder.Owner.Email</td>
+            <td>---</td>
+        </tr>
+    }
+    @foreach (var folder in Model.Folder.Folders)
+    {
+        <tr>
+            <th scope="row">
+                <a asp-controller="Folders" asp-action="GetFolder" asp-route-id="@folder.Id">
+                    <i class="bi bi-folder2"></i> @folder.Name
+                </a>
+            </th>
             <td>@folder.Owner.Email</td>
             <td>---</td>
         </tr>
     }
-    @foreach (var file in Model.Files)
-        {
-            <tr>
-                <th scope="row"><i class="bi bi-file-earmark"></i> @file.Name</th>
-                <td>@file.Owner.Email</td>
-                <td>@file.Size Byte</td>
-            </tr>
-        }
+    @foreach (var file in Model.Folder.Files)
+    {
+        <tr>
+            <th scope="row"><i class="bi bi-file-earmark"></i> @file.Name</th>
+            <td>@file.Owner.Email</td>
+            <td>@file.Size Byte</td>
+        </tr>
+    }
     </tbody>
 </table>
