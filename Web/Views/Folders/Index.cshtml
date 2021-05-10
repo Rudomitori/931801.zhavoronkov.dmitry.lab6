@@ -1,0 +1,33 @@
+﻿@model Web.ViewModels.FolderViewModel
+@{
+    ViewBag.Title = Model.Name;
+}
+<h1>Root</h1>
+
+<table class="table table-bordered table-hover table-sm">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Owner</th>
+        <th scope="col">Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var folder in Model.Folders)
+    {
+        <tr>
+            <th scope="row"><i class="bi bi-folder2"></i> @folder.Name</th>
+            <td>@folder.Owner.Email</td>
+            <td>---</td>
+        </tr>
+    }
+    @foreach (var file in Model.Files)
+        {
+            <tr>
+                <th scope="row"><i class="bi bi-file-earmark"></i> @file.Name</th>
+                <td>@file.Owner.Email</td>
+                <td>@file.Size Byte</td>
+            </tr>
+        }
+    </tbody>
+</table>
