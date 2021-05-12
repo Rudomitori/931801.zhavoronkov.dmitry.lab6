@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Web.Models;
 
-namespace Web.ViewModels
+namespace Web.ViewModels.Folders
 {
     public class FolderViewModel
     {

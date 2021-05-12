@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Data;
 using Web.Models;
-using Web.ViewModels;
+using Web.ViewModels.Folders;
 
 namespace Web.Controllers
 {
@@ -33,7 +35,7 @@ namespace Web.Controllers
             });
         }
 
-        [HttpGet("[Controller]/{id}")]
+        [HttpGet("[controller]/{id:guid}")]
         public IActionResult GetFolder(Guid id)
         {
             if (ModelState.IsValid)
@@ -53,6 +55,71 @@ namespace Web.Controllers
                     Folder = folder,
                     Path = GetPath(folder)
                 });
+            }
+
+            return BadRequest();
+        }
+        
+        [HttpGet("[controller]/{ParentFolderId:guid}/Create")]
+        [Authorize]
+        public IActionResult Create(Guid parentFolderId)
+        {
+            if (ModelState.IsValid)
+            {
+                var parentFolder = _dbContext.Folders.FirstOrDefault(x => x.Id == parentFolderId);
+                if (parentFolder is null)
+                    return NotFound();
+
+                return View(new FolderCreatingViewModel {ParentFolderId = parentFolderId});
+            }
+
+            return BadRequest();
+        }
+        
+        [HttpPost("[controller]/{ParentFolderId:guid}/Create")]
+        [Authorize]
+        public IActionResult Create(FolderCreatingViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var parentFolder = _dbContext.Folders.FirstOrDefault(x => x.Id == model.ParentFolderId);
+                if (parentFolder is null)
+                    return NotFound();
+
+                var folder = new Folder
+                {
+                    Name = model.Name,
+                    OwnerId = new Guid(HttpContext.User.FindFirstValue("Id")),
+                    ParentFolderId = parentFolder.Id
+                };
+
+                _dbContext.Add(folder);
+                _dbContext.SaveChanges();
+
+                return Redirect($"/Folders/{parentFolder.Id}");
+            }
+
+            return View(model);
+        }
+
+        [HttpGet("[controller]/{id:guid}/Delete")]
+        [Authorize]
+        public IActionResult Delete(Guid id)
+        {
+            if (ModelState.IsValid)
+            {
+                var folder = _dbContext.Folders.FirstOrDefault(x => x.Id == id);
+                if (folder is null)
+                    return NotFound();
+
+                var userId = new Guid(HttpContext.User.FindFirstValue("Id"));
+                if (folder.OwnerId != userId && HttpContext.User.IsInRole("Admin"))
+                    return Unauthorized();
+
+                _dbContext.Remove(folder);
+                _dbContext.SaveChanges();
+
+                return Redirect($"/Folders/{folder.ParentFolderId}");
             }
 
             return BadRequest();

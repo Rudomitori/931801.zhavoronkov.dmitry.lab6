@@ -1,4 +1,5 @@
-﻿@model Web.ViewModels.FolderViewModel
+﻿@using System.Security.Claims
+@model Web.ViewModels.Folders.FolderViewModel
 @{
     ViewBag.Title = Model.Folder.Name;
 }
@@ -15,7 +16,16 @@
     </div>
     <div class="form-control"></div>
     <div class="input-group-append">
-        <a class="btn btn-outline-danger" asp-controller="Home" asp-action="Index"><i class="bi bi-trash"></i></a>
+        @if (Context.User.Identity.IsAuthenticated)
+        {
+            <a class="btn btn-outline-info" asp-controller="Folders" asp-action="Create" asp-route-parentFolderId="@Model.Folder.Id">
+                <i class="bi bi-folder-plus"></i>
+            </a>
+            @if ((new Guid(Context.User.FindFirstValue("Id")) == Model.Folder.OwnerId || Context.User.IsInRole("Admin")) && Model.Folder.ParentFolderId is { })
+            {
+                <a class="btn btn-outline-danger" asp-controller="Folders" asp-action="Delete" asp-route-id="@Model.Folder.Id"><i class="bi bi-trash"></i></a>
+            }
+        }
     </div>
 </div>
 
