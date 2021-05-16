@@ -38,6 +38,7 @@
         <th scope="col">Name</th>
         <th scope="col">Owner</th>
         <th scope="col">Size</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -51,6 +52,7 @@
             </th>
             <td>@Model.Folder.ParentFolder.Owner.Email</td>
             <td>---</td>
+            <td></td>
         </tr>
     }
     @foreach (var folder in Model.Folder.Folders)
@@ -63,6 +65,19 @@
             </th>
             <td>@folder.Owner.Email</td>
             <td>---</td>
+            @if (new Guid(Context.User.FindFirstValue("Id")) == folder.OwnerId || Context.User.IsInRole("Admin"))
+            {
+                <td class="align-middle p-0 text-center">
+                    <a class="text-danger" style="width: 100%;" asp-controller="Folders" asp-action="Delete" asp-route-id="@folder.Id">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
+            
         </tr>
     }
     @foreach (var file in Model.Folder.Files)
@@ -75,6 +90,18 @@
             </th>
             <td>@file.Owner.Email</td>
             <td>@file.Size Byte</td>
+            @if (new Guid(Context.User.FindFirstValue("Id")) == file.OwnerId || Context.User.IsInRole("Admin"))
+            {
+                <td class="align-middle p-0 text-center">
+                    <a class="text-danger" style="width: 100%;" asp-controller="Files" asp-action="Delete" asp-route-id="@file.Id">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
         </tr>
     }
     </tbody>
