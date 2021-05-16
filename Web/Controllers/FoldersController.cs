@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Web.Data;
 using Web.Models;
 using Web.ViewModels.Folders;
+using File = Web.Models.File;
 
 namespace Web.Controllers
 {
@@ -123,6 +127,52 @@ namespace Web.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("[controller]/{id:guid}/Upload")]
+        [Authorize]
+        public IActionResult Upload(Guid id)
+        {
+            if (ModelState.IsValid)
+            {
+                var folder = _dbContext.Folders.FirstOrDefault(x => x.Id == id);
+                if (folder is null)
+                    return NotFound();
+
+                ViewBag.FolderId = id;
+                return View();
+            }
+
+            return BadRequest();
+        }
+        
+        [HttpPost("[controller]/{folderId:guid}/Upload")]
+        [Authorize]
+        public IActionResult Upload(Guid folderId,[FromForm] [Required] IFormFile file)
+        {
+            if (ModelState.IsValid)
+            {
+                var folder = _dbContext.Folders.FirstOrDefault(x => x.Id == folderId);
+                if (folder is null)
+                    return NotFound();
+                
+                var stream = file.OpenReadStream();
+                using var reader = new BinaryReader(stream);
+                _dbContext.Files.Add(new File
+                {
+                    Body = reader.ReadBytes((int) file.Length),
+                    Name = file.FileName,
+                    FolderId = folderId,
+                    OwnerId = new Guid(HttpContext.User.FindFirstValue("Id")),
+                    Size = (int) file.Length
+                });
+                _dbContext.SaveChanges();
+
+                return Redirect($"/Folders/{folderId}");
+            }
+
+            ViewBag.FolderId = folderId;
+            return View();
         }
 
         private List<(string name, Guid id)> GetPath(Folder folder)

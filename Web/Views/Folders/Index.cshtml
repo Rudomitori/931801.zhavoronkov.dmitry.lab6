@@ -21,6 +21,9 @@
             <a class="btn btn-outline-info" asp-controller="Folders" asp-action="Create" asp-route-parentFolderId="@Model.Folder.Id">
                 <i class="bi bi-folder-plus"></i>
             </a>
+            <a class="btn btn-outline-info" asp-controller="Folders" asp-action="Upload" asp-route-id="@Model.Folder.Id">
+                <i class="bi bi-file-earmark-plus"></i>
+            </a>
             @if ((new Guid(Context.User.FindFirstValue("Id")) == Model.Folder.OwnerId || Context.User.IsInRole("Admin")) && Model.Folder.ParentFolderId is { })
             {
                 <a class="btn btn-outline-danger" asp-controller="Folders" asp-action="Delete" asp-route-id="@Model.Folder.Id"><i class="bi bi-trash"></i></a>
@@ -65,7 +68,11 @@
     @foreach (var file in Model.Folder.Files)
     {
         <tr>
-            <th scope="row"><i class="bi bi-file-earmark"></i> @file.Name</th>
+            <th scope="row">
+                <a asp-controller="Files" asp-action="GetFile" asp-route-id="@file.Id">
+                    <i class="bi bi-file-earmark"></i> @file.Name
+                </a>
+            </th>
             <td>@file.Owner.Email</td>
             <td>@file.Size Byte</td>
         </tr>
