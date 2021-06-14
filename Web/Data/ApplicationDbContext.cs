@@ -17,6 +17,8 @@ namespace Web.Data
         
         public DbSet<Post> Posts { get; set; }
         
+        public DbSet<Comment> Comments { get; set; }
+        
         public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -52,6 +54,7 @@ namespace Web.Data
                 var offtopCategory = new ForumCategory
                 {
                     Id = Guid.NewGuid(),
+                    AuthorId = admin.Id,
                     Name = "Offtop",
                     Description = "About everything and nothing"
                 };
@@ -66,6 +69,38 @@ namespace Web.Data
                     CreateTime = DateTime.Now,
                     EditTime = DateTime.Now
                 };
+
+                var comments = new List<Comment>
+                {
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        AuthorId = admin.Id,
+                        Text = "First comment",
+                        Time = DateTime.Now,
+                        PostId = firstOfftop.Id
+                    },
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        AuthorId = admin.Id,
+                        Text = "Second comment",
+                        Time = DateTime.Now,
+                        PostId = firstOfftop.Id
+                    }
+                };
+
+                var secondOfftop = new Post
+                {
+                    Id = Guid.NewGuid(),
+                    CategoryId = offtopCategory.Id,
+                    AuthorId = admin.Id,
+                    Title = "Second offtop",
+                    Text = "Second offtop body",
+                    CreateTime = DateTime.Now,
+                    EditTime = DateTime.Now,
+                };
+                
 
                 var attachments = new List<Attachment>
                 {
@@ -135,9 +170,12 @@ namespace Web.Data
                 };
 
                 builder.Entity<User>().HasData(admin);
+                
                 builder.Entity<ForumCategory>().HasData(offtopCategory);
-                builder.Entity<Post>().HasData(firstOfftop);
+                builder.Entity<Post>().HasData(firstOfftop, secondOfftop);
+                builder.Entity<Comment>().HasData(comments);
                 builder.Entity<Attachment>().HasData(attachments);
+                
                 builder.Entity<Folder>().HasData(rootFolder);
                 builder.Entity<File>().HasData(files);
                 builder.Entity<Folder>().HasData(folders);

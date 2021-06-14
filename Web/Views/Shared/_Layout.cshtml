@@ -21,17 +21,11 @@
         <nav class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Folders" asp-action="Index">Folders</a>
+                    <a class="nav-link" asp-controller="Folders" asp-action="Index">File system</a>
                 </li>
-                @* <li class="nav-item"> *@
-                @*     <a class="nav-link" asp-controller="Labs" asp-action="Index">Labs</a> *@
-                @* </li> *@
-                @* <li class="nav-item"> *@
-                @*     <a class="nav-link" asp-controller="Doctors" asp-action="Index">Doctors</a> *@
-                @* </li> *@
-                @* <li class="nav-item"> *@
-                @*     <a class="nav-link" asp-controller="Patients" asp-action="Index">Patients</a> *@
-                @* </li> *@
+                <li class="nav-item">
+                     <a class="nav-link" asp-controller="ForumCategories" asp-action="Index">Forum</a>
+                </li>
             </ul>
             <ul class="navbar-nav">
                 @if (Context.User.FindFirst(ClaimTypes.Name) is null)

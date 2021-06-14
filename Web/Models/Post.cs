@@ -29,5 +29,7 @@ namespace Web.Models
         public DateTime CreateTime { get; set; }
         
         public DateTime EditTime { get; set; }
+        
+        public ICollection<Comment> Comments { get; set; }
     }
 }

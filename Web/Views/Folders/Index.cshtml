@@ -65,7 +65,7 @@
             </th>
             <td>@folder.Owner.Email</td>
             <td>---</td>
-            @if (new Guid(Context.User.FindFirstValue("Id")) == folder.OwnerId || Context.User.IsInRole("Admin"))
+            @if (Context.User.FindFirstValue("Id") is { } str && new Guid(str) == folder.OwnerId || Context.User.IsInRole("Admin"))
             {
                 <td class="align-middle p-0 text-center">
                     <a class="text-danger" style="width: 100%;" asp-controller="Folders" asp-action="Delete" asp-route-id="@folder.Id">
@@ -90,7 +90,7 @@
             </th>
             <td>@file.Owner.Email</td>
             <td>@file.Size Byte</td>
-            @if (new Guid(Context.User.FindFirstValue("Id")) == file.OwnerId || Context.User.IsInRole("Admin"))
+            @if (Context.User.FindFirstValue("Id") is { } str && new Guid(str) == file.OwnerId || Context.User.IsInRole("Admin"))
             {
                 <td class="align-middle p-0 text-center">
                     <a class="text-danger" style="width: 100%;" asp-controller="Files" asp-action="Delete" asp-route-id="@file.Id">
